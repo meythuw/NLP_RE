@@ -1,0 +1,43 @@
+# ===== Python bytecode =====
+*.pyc
+__pycache__/
+
+# ===== Virtual environment =====
+.venv/
+venv/
+env/
+
+# ===== Logs =====
+*.log
+
+# ===== MLflow =====
+mlruns/
+mlartifacts/
+
+# ===== Model files =====
+*.pkl
+*.joblib
+*.pt
+*.pth
+*.onnx
+
+# ===== Environment variables =====
+.env
+.env.*
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.iml
+
+# ===== Packaging =====
+*.egg-info/
+dist/
+build/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db

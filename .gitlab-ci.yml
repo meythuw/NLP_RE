@@ -1,0 +1,48 @@
+stages:
+  - build-and-push-to-registry
+  - pull-and-deploy
+
+variables:
+  GROUP_NAME: nlp-project3
+  CONTAINER_NAME: nlp
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+build-and-push-to-registry:
+  tags:
+    - promox
+  stage: build-and-push-to-registry
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker rmi -f $DOCKER_IMAGE || true
+    - docker build -t $DOCKER_IMAGE -f Dockerfile .
+    - docker push $DOCKER_IMAGE
+  only:
+    - main
+
+pull-and-deploy:
+  tags:
+    - promox
+  stage: pull-and-deploy
+  image: alpine:latest
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+    - ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+  script:
+    - ssh $SERVER_USER@$SERVER_HOST "
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        cd $GROUP_NAME/$CONTAINER_NAME &&
+        docker compose pull &&
+        docker compose down &&
+        docker compose up -d --remove-orphans
+      "
+  only:
+    - main

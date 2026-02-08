@@ -1,0 +1,26 @@
+relations:
+  has_inci_name:
+    head: NAME
+    tail: INCI
+
+  has_origin:
+    head: NAME
+    tail: ORIGIN
+
+  has_benefits:
+    head: NAME
+    tail: BENEFITS
+
+  targets_skin_concerns:
+    head: NAME
+    tail: SKIN_CONCERNS
+
+
+# =========================
+# Valid entity types
+# =========================
+valid_tail_types:
+  - INCI
+  - ORIGIN
+  - BENEFITS
+  - SKIN_CONCERNS
